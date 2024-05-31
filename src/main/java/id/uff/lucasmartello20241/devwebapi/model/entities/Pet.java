@@ -23,4 +23,12 @@ public class Pet {
     private double height;
     private double weight;
 
+    public Pet(String name, String animal, int age, double height, double weight) {
+        this.name = name;
+        this.animal = animal;
+        this.age = age;
+        this.height = height;
+        this.weight = weight;
+    }
+
 }

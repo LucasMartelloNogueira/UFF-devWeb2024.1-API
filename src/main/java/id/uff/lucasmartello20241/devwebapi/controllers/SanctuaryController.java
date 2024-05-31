@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import id.uff.lucasmartello20241.devwebapi.model.dtos.SanctuaryDTO;
 import id.uff.lucasmartello20241.devwebapi.model.entities.Sanctuary;
 import id.uff.lucasmartello20241.devwebapi.model.utils.PageResult;
 import id.uff.lucasmartello20241.devwebapi.services.SanctuaryService;
@@ -39,13 +40,15 @@ public class SanctuaryController extends BaseController{
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Sanctuary> read(@PathVariable("id") int id) {
-        return ResponseEntity.status(HttpStatus.OK).body(sanctuaryService.read(id));
+    public ResponseEntity<SanctuaryDTO> read(@PathVariable("id") int id) {
+        SanctuaryDTO sanctuaryDTO = SanctuaryDTO.fromEntity(sanctuaryService.read(id));
+        return ResponseEntity.status(HttpStatus.OK).body(sanctuaryDTO);
     }
 
     @PutMapping()
-    public ResponseEntity<Sanctuary> update(@RequestBody Sanctuary sanctuary) {
-        return ResponseEntity.status(HttpStatus.OK).body(sanctuaryService.update(sanctuary));
+    public ResponseEntity<SanctuaryDTO> update(@RequestBody Sanctuary sanctuary) {
+        SanctuaryDTO sanctuaryDTO = SanctuaryDTO.fromEntity(sanctuaryService.update(sanctuary));
+        return ResponseEntity.status(HttpStatus.OK).body(sanctuaryDTO);
     }
 
     @DeleteMapping("/{id}")
@@ -55,17 +58,17 @@ public class SanctuaryController extends BaseController{
     }
 
     @GetMapping()
-    public ResponseEntity<PageResult<Sanctuary>> findAllPaginated(
+    public ResponseEntity<PageResult<SanctuaryDTO>> findAllPaginated(
         @RequestParam(value = "page", defaultValue = "0") int page, 
         @RequestParam(value = "size", defaultValue = "3") int size) {
         
         PageRequest pageable = PageRequest.of(page, size);
         Page<Sanctuary> pageSanctuary = sanctuaryService.findAllPaginated(pageable);
 
-        List<Sanctuary> sanctuaries = new ArrayList<>();
-        pageSanctuary.getContent().forEach((sanctuary) -> sanctuaries.add(sanctuary));
+        List<SanctuaryDTO> sanctuaries = new ArrayList<>();
+        pageSanctuary.getContent().forEach((sanctuary) -> sanctuaries.add(SanctuaryDTO.fromEntity(sanctuary)));
 
-        PageResult<Sanctuary> pageResult = new PageResult<>(
+        PageResult<SanctuaryDTO> pageResult = new PageResult<>(
             pageSanctuary.getTotalElements(), 
             pageSanctuary.getTotalPages(), 
             pageSanctuary.getNumber(),

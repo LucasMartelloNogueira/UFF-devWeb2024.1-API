@@ -2,8 +2,11 @@ package id.uff.lucasmartello20241.devwebapi.model.entities;
 
 import java.time.LocalDateTime;
 
+import id.uff.lucasmartello20241.devwebapi.model.enums.AdoptionStatus;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -30,14 +33,15 @@ public class SanctuaryPet {
     @Column(name = "admissiondate")
     private LocalDateTime admissionDate;
     
-    private String status;
+    @Enumerated(EnumType.STRING)
+    private AdoptionStatus status;
     private String observations;
 
     public SanctuaryPet(
         Integer petId,
         Integer sanctuaryId,
         LocalDateTime admissionDate,
-        String status,
+        AdoptionStatus status,
         String observations
     ) {
         this.petId = petId;
@@ -50,7 +54,7 @@ public class SanctuaryPet {
     public SanctuaryPet(
         Integer petId,
         Integer sanctuaryId,
-        String status,
+        AdoptionStatus status,
         String observations
     ) {
         this.petId = petId;

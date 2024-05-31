@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import id.uff.lucasmartello20241.devwebapi.model.dtos.UserDTO;
 import id.uff.lucasmartello20241.devwebapi.model.entities.User;
 import id.uff.lucasmartello20241.devwebapi.model.utils.PageResult;
 import id.uff.lucasmartello20241.devwebapi.services.UserService;
@@ -39,13 +40,15 @@ public class UserController extends BaseController{
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<User> read(@PathVariable("id") int id) {
-        return ResponseEntity.status(HttpStatus.OK).body(userService.read(id));
+    public ResponseEntity<UserDTO> read(@PathVariable("id") int id) {
+        UserDTO userDTO = UserDTO.fromEntity(userService.read(id));
+        return ResponseEntity.status(HttpStatus.OK).body(userDTO);
     }
 
     @PutMapping()
-    public ResponseEntity<User> update(@RequestBody User user) {
-        return ResponseEntity.status(HttpStatus.OK).body(userService.update(user));
+    public ResponseEntity<UserDTO> update(@RequestBody User user) {
+        UserDTO userDTO = UserDTO.fromEntity(userService.update(user));
+        return ResponseEntity.status(HttpStatus.OK).body(userDTO);
     }
 
     @DeleteMapping("/{id}")
@@ -55,17 +58,17 @@ public class UserController extends BaseController{
     }
 
     @GetMapping()
-    public ResponseEntity<PageResult<User>> findAllPaginated(
+    public ResponseEntity<PageResult<UserDTO>> findAllPaginated(
         @RequestParam(value = "page", defaultValue = "0") int page, 
         @RequestParam(value = "size", defaultValue = "3") int size) {
         
         PageRequest pageable = PageRequest.of(page, size);
         Page<User> pageUser = userService.findAllPaginated(pageable);
 
-        List<User> users = new ArrayList<>();
-        pageUser.getContent().forEach((user) -> users.add(user));
+        List<UserDTO> users = new ArrayList<>();
+        pageUser.getContent().forEach((user) -> users.add(UserDTO.fromEntity(user)));
 
-        PageResult<User> pageResult = new PageResult<>(
+        PageResult<UserDTO> pageResult = new PageResult<>(
             pageUser.getTotalElements(), 
             pageUser.getTotalPages(), 
             pageUser.getNumber(),

@@ -5,6 +5,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -19,14 +20,23 @@ public class Sanctuary {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
     private String name;
-    @Column(name = "ownerid")
-    private Integer ownerId;
+
+    private String country;
+    private String state;
+    private String city;
+
     private String address;
 
-    public Sanctuary(String name, Integer ownerId, String address) {
+    @ManyToOne
+    private User owner;
+
+    public Sanctuary(String name, String country, String state, String city, String address, User owner) {
         this.name = name;
-        this.ownerId = ownerId;
+        this.country = country;
+        this.state = state;
+        this.city = city;
         this.address = address;
+        this.owner = owner;
     }
 
 }
