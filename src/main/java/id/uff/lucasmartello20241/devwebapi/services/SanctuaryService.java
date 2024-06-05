@@ -39,4 +39,8 @@ public class SanctuaryService {
     public Page<Sanctuary> findAllPaginated(Pageable pageable) {
         return sanctuaryRepository.findAllPaginated(pageable);
     }
+
+    public Page<Sanctuary> findBySearchValuePaginated(String searchValue, Pageable pageable) {
+        return sanctuaryRepository.findBySearchValuePaginated(searchValue, pageable);
+    }
 }

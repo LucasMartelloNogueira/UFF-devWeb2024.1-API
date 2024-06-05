@@ -23,9 +23,14 @@ import id.uff.lucasmartello20241.devwebapi.model.entities.Sanctuary;
 import id.uff.lucasmartello20241.devwebapi.model.utils.PageResult;
 import id.uff.lucasmartello20241.devwebapi.services.SanctuaryService;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 @RestController
 @RequestMapping("sanctuaries")
 public class SanctuaryController extends BaseController{
+
+    private static final Logger logger = LoggerFactory.getLogger(SanctuaryController.class);
     
     private final SanctuaryService sanctuaryService;
 
@@ -77,6 +82,30 @@ public class SanctuaryController extends BaseController{
         );
         
         return ResponseEntity.ok().body(pageResult);
+    }
 
+    @GetMapping("/filter")
+    public ResponseEntity<PageResult<SanctuaryDTO>> findBySearchValuePaginated(
+        @RequestParam(value = "page", defaultValue = "0") int page, 
+        @RequestParam(value = "size", defaultValue = "3") int size,
+        @RequestParam(value = "searchValue", defaultValue = " ") String searchValue) {
+
+        logger.info("[LOGGER]searchValue = {}", searchValue);
+        
+        PageRequest pageable = PageRequest.of(page, size);
+        Page<Sanctuary> pageSanctuary = sanctuaryService.findBySearchValuePaginated(searchValue, pageable);
+
+        List<SanctuaryDTO> sanctuaries = new ArrayList<>();
+        pageSanctuary.getContent().forEach((sanctuary) -> sanctuaries.add(SanctuaryDTO.fromEntity(sanctuary)));
+
+        PageResult<SanctuaryDTO> pageResult = new PageResult<>(
+            pageSanctuary.getTotalElements(), 
+            pageSanctuary.getTotalPages(), 
+            pageSanctuary.getNumber(),
+            pageSanctuary.getNumberOfElements(),
+            sanctuaries
+        );
+        
+        return ResponseEntity.ok().body(pageResult);
     }
 }
