@@ -4,6 +4,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import id.uff.lucasmartello20241.devwebapi.model.entities.SanctuaryPet;
@@ -13,4 +14,7 @@ public interface SanctuaryPetRepository extends JpaRepository<SanctuaryPet, Inte
     
     @Query(value = "select * from tbsanctuarypets", countQuery = "select count(*) from tbsanctuarypets", nativeQuery = true)
     public Page<SanctuaryPet> findAllPaginated(Pageable pageable);
+
+    @Query(value = "select * from tbsanctuarypets where :sanctuaryId", countQuery = "select count(*) from tbsanctuarypets where :sanctuaryId", nativeQuery = true)
+    public Page<SanctuaryPet> findAllPaginatedBySanctuary(Pageable pageable, @Param("sanctuaryId") int sanctuaryId);
 }

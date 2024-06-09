@@ -41,4 +41,8 @@ public class SanctuaryPetService {
         return sanctuaryPetRepository.findAllPaginated(pageable);
     }
 
+    public Page<SanctuaryPet> findAllPaginatedBySanctuary(Pageable pageable, int sanctuaryId) {
+        return sanctuaryPetRepository.findAllPaginatedBySanctuary(pageable, sanctuaryId);
+    }
+
 }

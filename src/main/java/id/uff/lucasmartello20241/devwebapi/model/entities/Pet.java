@@ -22,13 +22,15 @@ public class Pet {
     private int age;
     private double height;
     private double weight;
+    private double estimateMonthlyCosts;
 
-    public Pet(String name, String animal, int age, double height, double weight) {
+    public Pet(String name, String animal, int age, double height, double weight, double estimateMonthlyCosts) {
         this.name = name;
         this.animal = animal;
         this.age = age;
         this.height = height;
         this.weight = weight;
+        this.estimateMonthlyCosts = estimateMonthlyCosts;
     }
 
 }

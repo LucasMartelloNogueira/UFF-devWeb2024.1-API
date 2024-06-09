@@ -76,4 +76,28 @@ public class SanctuaryPetController extends BaseController{
         return ResponseEntity.ok().body(pageResult);
 
     }
+
+    @GetMapping("/bySanctuary")
+    public ResponseEntity<PageResult<SanctuaryPet>> findAllPaginatedBySanctuary(
+        @RequestParam(value = "page", defaultValue = "0") int page, 
+        @RequestParam(value = "size", defaultValue = "3") int size,
+        @RequestParam(value = "sanctuaryId") int sanctuaryId) {
+        
+        PageRequest pageable = PageRequest.of(page, size);
+        Page<SanctuaryPet> pageSanctuaryPet = sanctuaryPetService.findAllPaginatedBySanctuary(pageable, sanctuaryId);
+
+        List<SanctuaryPet> sanctuaryPets = new ArrayList<>();
+        pageSanctuaryPet.getContent().forEach((sanctuaryPet) -> sanctuaryPets.add(sanctuaryPet));
+
+        PageResult<SanctuaryPet> pageResult = new PageResult<>(
+            pageSanctuaryPet.getTotalElements(), 
+            pageSanctuaryPet.getTotalPages(), 
+            pageSanctuaryPet.getNumber(),
+            pageSanctuaryPet.getNumberOfElements(),
+            sanctuaryPets
+        );
+        
+        return ResponseEntity.ok().body(pageResult);
+
+    }
 }

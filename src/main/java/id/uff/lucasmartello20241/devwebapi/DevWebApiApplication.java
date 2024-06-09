@@ -50,10 +50,10 @@ public class DevWebApiApplication implements CommandLineRunner{
 		userRepository.save(user1);
 		userRepository.save(user2);
 
-		Pet pet1 = new Pet("Maggie", "cachorro", 3 , 1.33, 44.56);
-		Pet pet2 = new Pet("Hazel", "cachorro", 2 , 1.28, 47.39);
-		Pet pet3 = new Pet("Salem", "gato", 1 , 0.34, 5.68);
-		Pet pet4 = new Pet("Bruce", "cachorro", 7 , 1.24, 15.87);
+		Pet pet1 = new Pet("Maggie", "cachorro", 3 , 1.33, 44.56, 300.00);
+		Pet pet2 = new Pet("Hazel", "cachorro", 2 , 1.28, 47.39, 250.00);
+		Pet pet3 = new Pet("Salem", "gato", 1 , 0.34, 5.68, 120.50);
+		Pet pet4 = new Pet("Bruce", "cachorro", 7 , 1.24, 15.87, 400.00);
 
 		petRepository.save(pet1);
 		petRepository.save(pet2);

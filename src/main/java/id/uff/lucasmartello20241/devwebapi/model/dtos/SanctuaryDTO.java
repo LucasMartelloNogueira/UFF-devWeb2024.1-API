@@ -5,7 +5,7 @@ import id.uff.lucasmartello20241.devwebapi.model.entities.Sanctuary;
 public record SanctuaryDTO(
         Integer id,
         String name,
-        String county,
+        String country,
         String state,
         String city,
         String address,
