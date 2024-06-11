@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import id.uff.lucasmartello20241.devwebapi.model.dtos.SanctuaryPetWithPetInfoDTO;
 import id.uff.lucasmartello20241.devwebapi.model.entities.SanctuaryPet;
 import id.uff.lucasmartello20241.devwebapi.model.utils.PageResult;
 import id.uff.lucasmartello20241.devwebapi.services.SanctuaryPetService;
@@ -78,24 +79,13 @@ public class SanctuaryPetController extends BaseController{
     }
 
     @GetMapping("/bySanctuary")
-    public ResponseEntity<PageResult<SanctuaryPet>> findAllPaginatedBySanctuary(
+    public ResponseEntity<PageResult<SanctuaryPetWithPetInfoDTO>> findAllPaginatedBySanctuary(
         @RequestParam(value = "page", defaultValue = "0") int page, 
         @RequestParam(value = "size", defaultValue = "3") int size,
         @RequestParam(value = "sanctuaryId") int sanctuaryId) {
         
         PageRequest pageable = PageRequest.of(page, size);
-        Page<SanctuaryPet> pageSanctuaryPet = sanctuaryPetService.findAllPaginatedBySanctuary(pageable, sanctuaryId);
-
-        List<SanctuaryPet> sanctuaryPets = new ArrayList<>();
-        pageSanctuaryPet.getContent().forEach((sanctuaryPet) -> sanctuaryPets.add(sanctuaryPet));
-
-        PageResult<SanctuaryPet> pageResult = new PageResult<>(
-            pageSanctuaryPet.getTotalElements(), 
-            pageSanctuaryPet.getTotalPages(), 
-            pageSanctuaryPet.getNumber(),
-            pageSanctuaryPet.getNumberOfElements(),
-            sanctuaryPets
-        );
+        PageResult<SanctuaryPetWithPetInfoDTO> pageResult = sanctuaryPetService.findAllPaginatedBySanctuary(pageable, sanctuaryId);
         
         return ResponseEntity.ok().body(pageResult);
 
