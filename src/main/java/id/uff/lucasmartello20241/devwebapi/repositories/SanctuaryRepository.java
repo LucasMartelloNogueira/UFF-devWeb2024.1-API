@@ -20,4 +20,10 @@ public interface SanctuaryRepository extends JpaRepository<Sanctuary, Integer>{
         countQuery = "select count(*) from tbsanctuaries where (name regexp :searchValue) or (country regexp :searchValue) or (state regexp :searchValue) or (city regexp :searchValue)",
         nativeQuery = true)
     Page<Sanctuary> findBySearchValuePaginated(@Param("searchValue") String searchValue, Pageable pageable);
+
+    @Query(
+        value = "select * from tbsanctuaries where (name regexp :searchValue) or (country regexp :searchValue) or (state regexp :searchValue) or (city regexp :searchValue)",
+        countQuery = "select count(*) from tbsanctuaries where (name regexp :searchValue) or (country regexp :searchValue) or (state regexp :searchValue) or (city regexp :searchValue)",
+        nativeQuery = true)
+    Page<Sanctuary> findBySearchValueSortedPaginated(@Param("searchValue") String searchValue, Pageable pageable);
 }

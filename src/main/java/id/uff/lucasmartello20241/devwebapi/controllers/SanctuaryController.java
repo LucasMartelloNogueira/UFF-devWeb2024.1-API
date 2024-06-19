@@ -6,6 +6,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -101,6 +102,33 @@ public class SanctuaryController extends BaseController{
         
         PageRequest pageable = PageRequest.of(page, size);
         Page<Sanctuary> pageSanctuary = sanctuaryService.findBySearchValuePaginated(searchValue, pageable);
+
+        List<SanctuaryDTO> sanctuaries = new ArrayList<>();
+        pageSanctuary.getContent().forEach((sanctuary) -> sanctuaries.add(SanctuaryDTO.fromEntity(sanctuary)));
+
+        PageResult<SanctuaryDTO> pageResult = new PageResult<>(
+            pageSanctuary.getTotalElements(), 
+            pageSanctuary.getTotalPages(), 
+            pageSanctuary.getNumber(),
+            pageSanctuary.getNumberOfElements(),
+            sanctuaries
+        );
+        
+        return ResponseEntity.ok().body(pageResult);
+    }
+
+    @GetMapping("/filterSorted")
+    public ResponseEntity<PageResult<SanctuaryDTO>> findBySearchValueSortedPaginated(
+        @RequestParam(value = "page", defaultValue = "0") int page, 
+        @RequestParam(value = "size", defaultValue = "3") int size,
+        @RequestParam(value = "searchValue", defaultValue = " ") String searchValue,
+        @RequestParam(value = "sortField", defaultValue = "id") String sortField,
+        @RequestParam(value = "sortDirection", defaultValue = "asc") String sortDirection) {
+        
+        Sort sortOption = sortDirection == "asc" ? Sort.by(sortField).ascending() : Sort.by(sortField).descending(); 
+
+        PageRequest pageable = PageRequest.of(page, size, sortOption);
+        Page<Sanctuary> pageSanctuary = sanctuaryService.findBySearchValueSortedPaginated(searchValue, pageable);
 
         List<SanctuaryDTO> sanctuaries = new ArrayList<>();
         pageSanctuary.getContent().forEach((sanctuary) -> sanctuaries.add(SanctuaryDTO.fromEntity(sanctuary)));

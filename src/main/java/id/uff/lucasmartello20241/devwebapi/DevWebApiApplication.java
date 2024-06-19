@@ -61,7 +61,7 @@ public class DevWebApiApplication implements CommandLineRunner{
 		petRepository.save(pet4);
 
 		Sanctuary sanctuary1 = new Sanctuary("lar dos pets", "Brasil", "Rio de Janeiro", "Niteroi", "Rua das flores 100", user1);
-		Sanctuary sanctuary2 = new Sanctuary("lar dos pets 2", "Brasil", "São Paulo", "Niteroi", "Rua das árvores 50", user2);
+		Sanctuary sanctuary2 = new Sanctuary("casa dos pets", "Colombia", "São Paulo", "Niteroi", "Rua das árvores 50", user2);
 
 		sanctuaryRepository.save(sanctuary1);
 		sanctuaryRepository.save(sanctuary2);
