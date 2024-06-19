@@ -22,6 +22,7 @@ import id.uff.lucasmartello20241.devwebapi.model.dtos.SanctuaryDTO;
 import id.uff.lucasmartello20241.devwebapi.model.entities.Sanctuary;
 import id.uff.lucasmartello20241.devwebapi.model.utils.PageResult;
 import id.uff.lucasmartello20241.devwebapi.services.SanctuaryService;
+import id.uff.lucasmartello20241.devwebapi.model.dtos.SanctuaryWithOwnerNameDTO;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -42,6 +43,12 @@ public class SanctuaryController extends BaseController{
     @PostMapping()
     public ResponseEntity<Sanctuary> create(@RequestBody Sanctuary sanctuary) {
         return ResponseEntity.status(HttpStatus.OK).body(sanctuaryService.create(sanctuary));
+    }
+
+    @PostMapping("/createByOwnerName")
+    public ResponseEntity<SanctuaryDTO> createByOwnerName(@RequestBody SanctuaryWithOwnerNameDTO sanctuary) {
+        Sanctuary newSanctuary = sanctuaryService.createByOwnerName(sanctuary);
+        return ResponseEntity.status(HttpStatus.OK).body(SanctuaryDTO.fromEntity(newSanctuary));
     }
 
     @GetMapping("/{id}")

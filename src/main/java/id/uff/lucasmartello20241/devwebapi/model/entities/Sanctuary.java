@@ -1,6 +1,5 @@
 package id.uff.lucasmartello20241.devwebapi.model.entities;
 
-import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
