@@ -9,12 +9,14 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 import id.uff.lucasmartello20241.devwebapi.model.entities.Adoption;
 import id.uff.lucasmartello20241.devwebapi.model.entities.Cart;
+import id.uff.lucasmartello20241.devwebapi.model.entities.CartItem;
 import id.uff.lucasmartello20241.devwebapi.model.entities.Pet;
 import id.uff.lucasmartello20241.devwebapi.model.entities.Sanctuary;
 import id.uff.lucasmartello20241.devwebapi.model.entities.SanctuaryPet;
 import id.uff.lucasmartello20241.devwebapi.model.entities.User;
 import id.uff.lucasmartello20241.devwebapi.model.enums.AdoptionStatus;
 import id.uff.lucasmartello20241.devwebapi.repositories.AdoptionRepository;
+import id.uff.lucasmartello20241.devwebapi.repositories.CartItemRepository;
 import id.uff.lucasmartello20241.devwebapi.repositories.CartRepository;
 import id.uff.lucasmartello20241.devwebapi.repositories.PetRepository;
 import id.uff.lucasmartello20241.devwebapi.repositories.SanctuaryPetRepository;
@@ -46,6 +48,9 @@ public class DevWebApiApplication implements CommandLineRunner{
 	@Autowired
 	CartRepository cartRepository;
 
+	@Autowired
+	CartItemRepository cartItemRepository;
+
 
 	@Override
 	public void run(String... args) {
@@ -76,10 +81,10 @@ public class DevWebApiApplication implements CommandLineRunner{
 		SanctuaryPet sanctuaryPet3 = new SanctuaryPet(pet3.getId(), sanctuary2.getId(), AdoptionStatus.WAITING_ADOPTION, "amigavel");
 		SanctuaryPet sanctuaryPet4 = new SanctuaryPet(pet4.getId(), sanctuary2.getId(), AdoptionStatus.ADOPTED, "amigavel");
 
-		sanctuaryPetRepository.save(sanctuaryPet1);
-		sanctuaryPetRepository.save(sanctuaryPet2);
-		sanctuaryPetRepository.save(sanctuaryPet3);
-		sanctuaryPetRepository.save(sanctuaryPet4);
+		sanctuaryPet1 = sanctuaryPetRepository.save(sanctuaryPet1);
+		sanctuaryPet2 = sanctuaryPetRepository.save(sanctuaryPet2);
+		sanctuaryPet3 = sanctuaryPetRepository.save(sanctuaryPet3);
+		sanctuaryPet4 = sanctuaryPetRepository.save(sanctuaryPet4);
 
 		Adoption adoption1 = new Adoption(user1.getId(), sanctuaryPet2.getId(), LocalDateTime.now());
 		Adoption adoption2 = new Adoption(user2.getId(), sanctuaryPet4.getId(), LocalDateTime.now());
@@ -89,6 +94,12 @@ public class DevWebApiApplication implements CommandLineRunner{
 
 		Cart cart = new Cart(user1.getId());
 		cartRepository.save(cart);
+
+		CartItem ci1 = new CartItem(cart, sanctuaryPet1.getId(), 1);
+		CartItem ci2 = new CartItem(cart, sanctuaryPet2.getId(), 1);
+
+		ci1 = cartItemRepository.save(ci1);
+		ci2 = cartItemRepository.save(ci2);
 	}
 
 }
