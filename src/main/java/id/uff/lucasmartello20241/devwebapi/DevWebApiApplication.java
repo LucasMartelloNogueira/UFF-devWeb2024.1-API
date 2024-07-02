@@ -8,12 +8,14 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 import id.uff.lucasmartello20241.devwebapi.model.entities.Adoption;
+import id.uff.lucasmartello20241.devwebapi.model.entities.Cart;
 import id.uff.lucasmartello20241.devwebapi.model.entities.Pet;
 import id.uff.lucasmartello20241.devwebapi.model.entities.Sanctuary;
 import id.uff.lucasmartello20241.devwebapi.model.entities.SanctuaryPet;
 import id.uff.lucasmartello20241.devwebapi.model.entities.User;
 import id.uff.lucasmartello20241.devwebapi.model.enums.AdoptionStatus;
 import id.uff.lucasmartello20241.devwebapi.repositories.AdoptionRepository;
+import id.uff.lucasmartello20241.devwebapi.repositories.CartRepository;
 import id.uff.lucasmartello20241.devwebapi.repositories.PetRepository;
 import id.uff.lucasmartello20241.devwebapi.repositories.SanctuaryPetRepository;
 import id.uff.lucasmartello20241.devwebapi.repositories.SanctuaryRepository;
@@ -40,6 +42,9 @@ public class DevWebApiApplication implements CommandLineRunner{
 
 	@Autowired
 	AdoptionRepository adoptionRepository;
+
+	@Autowired
+	CartRepository cartRepository;
 
 
 	@Override
@@ -82,6 +87,8 @@ public class DevWebApiApplication implements CommandLineRunner{
 		adoptionRepository.save(adoption1);
 		adoptionRepository.save(adoption2);
 
+		Cart cart = new Cart(user1.getId());
+		cartRepository.save(cart);
 	}
 
 }
