@@ -22,8 +22,8 @@ public interface SanctuaryRepository extends JpaRepository<Sanctuary, Integer>{
     Page<Sanctuary> findBySearchValuePaginated(@Param("searchValue") String searchValue, Pageable pageable);
 
     @Query(
-        value = "select * from tbsanctuaries where (name regexp :searchValue) or (country regexp :searchValue) or (state regexp :searchValue) or (city regexp :searchValue)",
-        countQuery = "select count(*) from tbsanctuaries where (name regexp :searchValue) or (country regexp :searchValue) or (state regexp :searchValue) or (city regexp :searchValue)",
+        value = "select s.*, u.name as owner from tbsanctuaries as s join tbusers as u on s.owner_id = u.id where (s.name regexp :searchValue) or (s.country regexp :searchValue) or (s.state regexp :searchValue) or (s.city regexp :searchValue)",
+        countQuery = "select  count(*) from (select s.*, u.name as owner from tbsanctuaries as s join tbusers as u on s.owner_id = u.id where (s.name regexp :searchValue) or (s.country regexp :searchValue) or (s.state regexp :searchValue) or (s.city regexp :searchValue)) as su",
         nativeQuery = true)
     Page<Sanctuary> findBySearchValueSortedPaginated(@Param("searchValue") String searchValue, Pageable pageable);
 }
