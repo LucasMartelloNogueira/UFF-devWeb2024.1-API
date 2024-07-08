@@ -125,7 +125,7 @@ public class SanctuaryController extends BaseController{
         @RequestParam(value = "sortField", defaultValue = "id") String sortField,
         @RequestParam(value = "sortDirection", defaultValue = "asc") String sortDirection) {
         
-        Sort sortOption = sortDirection == "asc" ? Sort.by(sortField).ascending() : Sort.by(sortField).descending(); 
+        Sort sortOption = sortDirection.equals("asc") ? Sort.by(sortField).ascending() : Sort.by(sortField).descending(); 
 
         PageRequest pageable = PageRequest.of(page, size, sortOption);
         Page<Sanctuary> pageSanctuary = sanctuaryService.findBySearchValueSortedPaginated(searchValue, pageable);
