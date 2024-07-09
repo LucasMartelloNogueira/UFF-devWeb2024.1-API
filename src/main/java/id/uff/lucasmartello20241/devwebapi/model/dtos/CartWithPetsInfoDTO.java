@@ -5,7 +5,7 @@ import java.util.List;
 public record CartWithPetsInfoDTO(
     int id,
     UserSimplifiedDTO user,
-    List<SanctuaryPetWithPetInfoDTO> sanctuaryPets
+    List<CartItemWithPetInfoDTO> items
 ) {
     
 }

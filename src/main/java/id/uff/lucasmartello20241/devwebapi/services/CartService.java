@@ -8,9 +8,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import id.uff.lucasmartello20241.devwebapi.exceptions.NotFoundException;
+import id.uff.lucasmartello20241.devwebapi.model.dtos.CartItemWithPetInfoDTO;
 import id.uff.lucasmartello20241.devwebapi.model.dtos.CartWithPetsInfoDTO;
-import id.uff.lucasmartello20241.devwebapi.model.dtos.SanctuaryPetWithPetInfoDTO;
 import id.uff.lucasmartello20241.devwebapi.model.dtos.UpdateCartDTO;
+import id.uff.lucasmartello20241.devwebapi.model.dtos.UpdateCartItemQuantityDTO;
 import id.uff.lucasmartello20241.devwebapi.model.dtos.UserSimplifiedDTO;
 import id.uff.lucasmartello20241.devwebapi.model.entities.Cart;
 import id.uff.lucasmartello20241.devwebapi.model.entities.CartItem;
@@ -44,16 +45,16 @@ public class CartService {
         Cart cart = cartRepository.findById(id).orElseThrow(() -> new NotFoundException(String.format("cart of id %d does not exist", id)));
         UserSimplifiedDTO user = UserSimplifiedDTO.fromEntity(userRepository.findById(cart.getUserId()).orElseThrow(() -> new NotFoundException(String.format("cart user of id %d does not exist", cart.getUserId()))));
 
-        List<SanctuaryPetWithPetInfoDTO> sanctuaryPets = new ArrayList<>();
+        List<CartItemWithPetInfoDTO> items = new ArrayList<>();
         
         for (CartItem cartItem : cart.getItems()) {
             SanctuaryPet sanctuaryPet = sanctuaryPetRepository.findById(cartItem.getSanctuaryPetId()).orElseThrow(() -> new NotFoundException(String.format("sanctuaryPet of id %d does not exist", cartItem.getSanctuaryPetId())));
             Pet pet = petRepository.findById(sanctuaryPet.getPetId()).orElseThrow(() -> new NotFoundException(String.format("Pet of id %d not found", sanctuaryPet.getPetId())));
-            SanctuaryPetWithPetInfoDTO sanctuaryPetWithPetInfoDTO = SanctuaryPetWithPetInfoDTO.fromEntity(sanctuaryPet, pet);
-            sanctuaryPets.add(sanctuaryPetWithPetInfoDTO);
+            CartItemWithPetInfoDTO cartItemWithPetInfoDTO = CartItemWithPetInfoDTO.fromEntity(cartItem, cart, sanctuaryPet, pet);
+            items.add(cartItemWithPetInfoDTO);
         }
 
-        CartWithPetsInfoDTO cartWithPetsInfoDTO = new CartWithPetsInfoDTO(cart.getId(), user, sanctuaryPets);
+        CartWithPetsInfoDTO cartWithPetsInfoDTO = new CartWithPetsInfoDTO(cart.getId(), user, items);
         return cartWithPetsInfoDTO;
     }
 
@@ -67,38 +68,34 @@ public class CartService {
 
         Cart cart = _cart.get();
         UserSimplifiedDTO user = UserSimplifiedDTO.fromEntity(userRepository.findById(cart.getUserId()).orElseThrow(() -> new NotFoundException(String.format("cart user of id %d does not exist", cart.getUserId()))));
-        List<SanctuaryPetWithPetInfoDTO> sanctuaryPets = new ArrayList<>();
+        List<CartItemWithPetInfoDTO> items = new ArrayList<>();
 
-        // [2]
-        // int sanctuaryPetId : updateCartDTO.sanctuaryPetsId()
         for (int sanctuaryPetId : updateCartDTO.sanctuaryPetsId()) {
 
-            // [1]
+            CartItem ci = null;
+
             for (CartItem cartItem : cart.getItems()) {
 
                 // tentou adicionar um item no carrinho que já está adicionado
                 if (cartItem.getSanctuaryPetId() == sanctuaryPetId){
-                    continue;
-                } else {
-                    // endpoint deve retornar na lista os itens que já estavam no carrinho
-                    SanctuaryPet sanctuaryPet = sanctuaryPetRepository.findById(cartItem.getSanctuaryPetId()).orElseThrow(() -> new NotFoundException(String.format("sanctuaryPet of id %d not found", cartItem.getSanctuaryPetId())));
-                    Pet pet = petRepository.findById(sanctuaryPet.getPetId()).orElseThrow(() -> new NotFoundException(String.format("Pet of id %d not found", sanctuaryPet.getPetId())));
-                    SanctuaryPetWithPetInfoDTO sanctuaryPetWithPetInfoDTO = SanctuaryPetWithPetInfoDTO.fromEntity(sanctuaryPet, pet);
-                    sanctuaryPets.add(sanctuaryPetWithPetInfoDTO);
+                    ci = cartItem;
+                    break;
                 }
             }
 
-            CartItem newCartItem = new CartItem(cart, sanctuaryPetId, 1);
-            cartItemRepository.save(newCartItem);
+            if (ci == null) {
+                ci = cartItemRepository.save(new CartItem(cart, sanctuaryPetId, 1)); 
+            }
 
-            SanctuaryPet sanctuaryPet = sanctuaryPetRepository.findById(newCartItem.getSanctuaryPetId()).orElseThrow(() -> new NotFoundException(String.format("sanctuaryPet of id %d not found", newCartItem.getSanctuaryPetId())));
+            int cartItemId = ci.getId();
+            SanctuaryPet sanctuaryPet = sanctuaryPetRepository.findById(ci.getSanctuaryPetId()).orElseThrow(() -> new NotFoundException(String.format("sanctuaryPet of id %d not found", cartItemId)));
             Pet pet = petRepository.findById(sanctuaryPet.getPetId()).orElseThrow(() -> new NotFoundException(String.format("Pet of id %d not found", sanctuaryPet.getPetId())));
-            SanctuaryPetWithPetInfoDTO sanctuaryPetWithPetInfoDTO = SanctuaryPetWithPetInfoDTO.fromEntity(sanctuaryPet, pet);
-            sanctuaryPets.add(sanctuaryPetWithPetInfoDTO);
+            CartItemWithPetInfoDTO cartItemWithPetInfoDTO = CartItemWithPetInfoDTO.fromEntity(ci, cart, sanctuaryPet, pet);
+            items.add(cartItemWithPetInfoDTO);
 
         }
 
-        CartWithPetsInfoDTO cartWithPetsInfoDTO = new CartWithPetsInfoDTO(cart.getId(), user, sanctuaryPets);
+        CartWithPetsInfoDTO cartWithPetsInfoDTO = new CartWithPetsInfoDTO(cart.getId(), user, items);
         return cartWithPetsInfoDTO;
 
     }
@@ -111,7 +108,7 @@ public class CartService {
         }
 
         UserSimplifiedDTO user = UserSimplifiedDTO.fromEntity(userRepository.findById(cart.get().getUserId()).orElseThrow(() -> new NotFoundException(String.format("cart user of id %d does not exist", cart.get().getUserId()))));
-        List<SanctuaryPetWithPetInfoDTO> sanctuaryPets = new ArrayList<>();
+        List<CartItemWithPetInfoDTO> items = new ArrayList<>();
         
         for (CartItem ci : cart.get().getItems()) {
             for (int sanctuaryPetId : updateCartDTO.sanctuaryPetsId()) {
@@ -121,14 +118,35 @@ public class CartService {
                 }else {
                     SanctuaryPet sanctuaryPet = sanctuaryPetRepository.findById(ci.getSanctuaryPetId()).orElseThrow(() -> new NotFoundException(String.format("sanctuaryPet of id %d not found", ci.getSanctuaryPetId())));
                     Pet pet = petRepository.findById(sanctuaryPet.getPetId()).orElseThrow(() -> new NotFoundException(String.format("Pet of id %d not found", sanctuaryPet.getPetId())));
-                    SanctuaryPetWithPetInfoDTO sanctuaryPetWithPetInfoDTO = SanctuaryPetWithPetInfoDTO.fromEntity(sanctuaryPet, pet);
-                    sanctuaryPets.add(sanctuaryPetWithPetInfoDTO);
+                    CartItemWithPetInfoDTO cartItemWithPetInfoDTO = CartItemWithPetInfoDTO.fromEntity(ci, cart.get(), sanctuaryPet, pet);
+                    items.add(cartItemWithPetInfoDTO);
                 }
                 
             }
         }
 
-        CartWithPetsInfoDTO cartWithPetsInfoDTO = new CartWithPetsInfoDTO(cart.get().getId(), user, sanctuaryPets);
+        CartWithPetsInfoDTO cartWithPetsInfoDTO = new CartWithPetsInfoDTO(cart.get().getId(), user, items);
+        return cartWithPetsInfoDTO;
+    }
+
+    public CartWithPetsInfoDTO updateCartItemQuantity(UpdateCartItemQuantityDTO updateCartItemQuantity) {
+        CartItem cartItem = cartItemRepository.findById(updateCartItemQuantity.cartItemId()).orElseThrow(() -> new NotFoundException(String.format("cartItem of id %d not found", updateCartItemQuantity.cartItemId())));
+        cartItem.setQuantity(updateCartItemQuantity.quantity());
+        cartItemRepository.save(cartItem);
+
+        Cart cart = cartRepository.findById(cartItem.getCart().getId()).orElseThrow(() -> new NotFoundException(String.format("cart of id %d does not exist", cartItem.getCart().getId())));
+        UserSimplifiedDTO user = UserSimplifiedDTO.fromEntity(userRepository.findById(cart.getUserId()).orElseThrow(() -> new NotFoundException(String.format("cart user of id %d does not exist", cart.getUserId()))));
+
+        List<CartItemWithPetInfoDTO> items = new ArrayList<>();
+        
+        for (CartItem ci : cart.getItems()) {
+            SanctuaryPet sanctuaryPet = sanctuaryPetRepository.findById(ci.getSanctuaryPetId()).orElseThrow(() -> new NotFoundException(String.format("sanctuaryPet of id %d does not exist", ci.getSanctuaryPetId())));
+            Pet pet = petRepository.findById(sanctuaryPet.getPetId()).orElseThrow(() -> new NotFoundException(String.format("Pet of id %d not found", sanctuaryPet.getPetId())));
+            CartItemWithPetInfoDTO cartItemWithPetInfoDTO = CartItemWithPetInfoDTO.fromEntity(ci, cart, sanctuaryPet, pet);
+            items.add(cartItemWithPetInfoDTO);
+        }
+
+        CartWithPetsInfoDTO cartWithPetsInfoDTO = new CartWithPetsInfoDTO(cart.getId(), user, items);
         return cartWithPetsInfoDTO;
     }
 
