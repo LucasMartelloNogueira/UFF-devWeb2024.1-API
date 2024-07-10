@@ -12,6 +12,7 @@ import id.uff.lucasmartello20241.devwebapi.model.dtos.CartItemWithPetInfoDTO;
 import id.uff.lucasmartello20241.devwebapi.model.dtos.CartWithPetsInfoDTO;
 import id.uff.lucasmartello20241.devwebapi.model.dtos.UpdateCartDTO;
 import id.uff.lucasmartello20241.devwebapi.model.dtos.UpdateCartItemQuantityDTO;
+import id.uff.lucasmartello20241.devwebapi.model.dtos.UpdateCartItemsDTO;
 import id.uff.lucasmartello20241.devwebapi.model.dtos.UserSimplifiedDTO;
 import id.uff.lucasmartello20241.devwebapi.model.entities.Cart;
 import id.uff.lucasmartello20241.devwebapi.model.entities.CartItem;
@@ -129,12 +130,21 @@ public class CartService {
         return cartWithPetsInfoDTO;
     }
 
-    public CartWithPetsInfoDTO updateCartItemQuantity(UpdateCartItemQuantityDTO updateCartItemQuantity) {
-        CartItem cartItem = cartItemRepository.findById(updateCartItemQuantity.cartItemId()).orElseThrow(() -> new NotFoundException(String.format("cartItem of id %d not found", updateCartItemQuantity.cartItemId())));
-        cartItem.setQuantity(updateCartItemQuantity.quantity());
-        cartItemRepository.save(cartItem);
+    public CartWithPetsInfoDTO updateCartItemQuantity(UpdateCartItemsDTO updateCartItems) {
 
-        Cart cart = cartRepository.findById(cartItem.getCart().getId()).orElseThrow(() -> new NotFoundException(String.format("cart of id %d does not exist", cartItem.getCart().getId())));
+        for (UpdateCartItemQuantityDTO updateCartItemQuantity : updateCartItems.items()) {
+            CartItem cartItem = cartItemRepository.findById(updateCartItemQuantity.cartItemId()).orElseThrow(() -> new NotFoundException(String.format("cartItem of id %d not found", updateCartItemQuantity.cartItemId())));
+            
+            if (updateCartItemQuantity.quantity() == 0) {
+                cartItemRepository.deleteById(cartItem.getId());
+            } else {
+                cartItem.setQuantity(updateCartItemQuantity.quantity());
+                cartItemRepository.save(cartItem);
+            }
+
+        }
+
+        Cart cart = cartRepository.findById(updateCartItems.cartId()).orElseThrow(() -> new NotFoundException(String.format("cart of id %d does not exist", updateCartItems.cartId())));
         UserSimplifiedDTO user = UserSimplifiedDTO.fromEntity(userRepository.findById(cart.getUserId()).orElseThrow(() -> new NotFoundException(String.format("cart user of id %d does not exist", cart.getUserId()))));
 
         List<CartItemWithPetInfoDTO> items = new ArrayList<>();

@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 import id.uff.lucasmartello20241.devwebapi.model.dtos.CartWithPetsInfoDTO;
 import id.uff.lucasmartello20241.devwebapi.model.dtos.UpdateCartDTO;
 import id.uff.lucasmartello20241.devwebapi.model.dtos.UpdateCartItemQuantityDTO;
+import id.uff.lucasmartello20241.devwebapi.model.dtos.UpdateCartItemsDTO;
 import id.uff.lucasmartello20241.devwebapi.services.CartService;
 
 @RestController
@@ -42,7 +43,7 @@ public class CartController extends BaseController{
     }
 
     @PatchMapping("/updateCartItemQuantity")
-    public ResponseEntity<CartWithPetsInfoDTO> updateCartItemQuantity (@RequestBody UpdateCartItemQuantityDTO updateCartItemQuantity){
+    public ResponseEntity<CartWithPetsInfoDTO> updateCartItemQuantity (@RequestBody UpdateCartItemsDTO updateCartItemQuantity){
         return ResponseEntity.status(HttpStatus.OK).body(cartService.updateCartItemQuantity(updateCartItemQuantity));
     }
     
