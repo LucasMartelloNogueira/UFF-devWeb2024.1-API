@@ -5,6 +5,7 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 import id.uff.lucasmartello20241.devwebapi.exceptions.NotFoundException;
@@ -47,7 +48,7 @@ public class UserService {
         return userRepository.findAllPaginated(pageable);
     }
 
-    public Optional<User> findByUsername(String username) {
+    public UserDetails findByUsername(String username) {
         return userRepository.findByUsername(username);
     }
 }

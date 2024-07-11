@@ -1,94 +1,63 @@
 package id.uff.lucasmartello20241.devwebapi.auth;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
-
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.auth0.jwt.exceptions.JWTCreationException;
-
+import id.uff.lucasmartello20241.devwebapi.auth.dto.request.LoginRequest;
+import id.uff.lucasmartello20241.devwebapi.auth.dto.request.RegisterRequest;
+import id.uff.lucasmartello20241.devwebapi.auth.dto.response.LoginResponse;
 import id.uff.lucasmartello20241.devwebapi.config.TokenService;
-import id.uff.lucasmartello20241.devwebapi.controllers.BaseController;
-import id.uff.lucasmartello20241.devwebapi.exceptions.UserAlreadyRegisteredException;
-import id.uff.lucasmartello20241.devwebapi.model.dtos.UserLoginDTO;
 import id.uff.lucasmartello20241.devwebapi.model.entities.User;
-import id.uff.lucasmartello20241.devwebapi.services.UserService;
+import id.uff.lucasmartello20241.devwebapi.repositories.UserRepository;
+
 
 @RestController
-@RequestMapping("auth")
-public class AuthController extends BaseController{
+@RequestMapping("/auth")
+public class AuthController {
+
+    @Autowired
+    private AuthenticationManager authenticationManager;
     
+    @Autowired
+    private UserRepository userRepository;
+
     @Autowired
     private TokenService tokenService;
 
-    @Autowired
-    private UserService userService;
-
-    @Autowired
-    private AuthenticationManager authenticationManager; 
-
-    @Autowired
-    private PasswordEncoder passwordEncoder;
-
-    @PostMapping("login")
-    public ResponseEntity<Token> login(@RequestBody UserLoginDTO authenticationRecord) {
-
-
-        var usernamePassword = new UsernamePasswordAuthenticationToken
-                (authenticationRecord.username(), authenticationRecord.password());
-        try {
-            Authentication authentication = authenticationManager.authenticate(usernamePassword);
-            var token = tokenService.generateToken((UserLoginDTO) authentication.getPrincipal());
-            return ResponseEntity.status(HttpStatus.OK).body(token);
-        }
-        catch(IllegalArgumentException |
-              JWTCreationException |
-              AuthenticationException e) {
-
-            System.out.println("A classe da exceção: " + e.getClass().getName());
-            throw e;
-        }
+    @PostMapping("/login")
+    public ResponseEntity login(@RequestBody LoginRequest request){
+        var usernamePassword = new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword());
+        var auth = this.authenticationManager.authenticate(usernamePassword);
+        var user = this.userRepository.findUserByUsername(request.getUsername());
+        
+        var token = tokenService.generateToken((User) auth.getPrincipal());
+        
+        return ResponseEntity.ok(new LoginResponse(token, user.getId(), user.getRole()));
     }
 
-    @PostMapping("register")      
-    public ResponseEntity<Map<String, String>> cadastrarUsuario(@RequestBody UserRegisterDTO userRegisterDTO) {
-
-        Optional<User> user = userService.findByUsername(userRegisterDTO.username());
-
-        if (!user.isPresent()) {
-
-            User newUser = new User();
-            newUser.setUsername(userRegisterDTO.username());
-            newUser.setPassword(passwordEncoder.encode(userRegisterDTO.password()));
-            newUser.setRole(userRegisterDTO.role());
-            newUser.setAccountNonLocked(true);
-            newUser.setCredentialsNonExpired(true);
-            newUser.setAccountNonExpired(true);
-            newUser.setEnabled(true);
-
-            var savedUser = userService.create(newUser);
-
-            Map<String, String> data = new HashMap<>();
-            data.put("message", "user created with success");
-            data.put("userId", savedUser.getId().toString());
-
-            return ResponseEntity.status(HttpStatus.OK).body(data);
+    @PostMapping("/register")
+    public ResponseEntity register(@RequestBody RegisterRequest request){
+        if (this.userRepository.findByUsername(request.name()) != null){
+            return ResponseEntity.badRequest().build();
         }
-        else {
-            throw new UserAlreadyRegisteredException(
-                    "Usuário " + userRegisterDTO.username() + " já cadastrado.");
-        }
+        
+        String encryptedPassword = new BCryptPasswordEncoder().encode(request.password());
+        User newUser = new User();
+        newUser.setUsername(request.username());
+        newUser.setPassword(encryptedPassword);
+        newUser.setRole(request.role());
+        newUser.setName(request.name());
+        newUser.setEmail(request.email());
+
+        this.userRepository.save(newUser);
+
+        return ResponseEntity.ok().build();
     }
 }

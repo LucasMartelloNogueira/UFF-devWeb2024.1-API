@@ -66,8 +66,21 @@ public class DevWebApiApplication implements CommandLineRunner{
 		user1.setUsername("Lucas");
 		user1.setPassword(passwordEncoder.encode("lucas123"));
 		user1.setRole(Role.ADMIN);
+		user1.setAccountNonExpired(true);
+		user1.setAccountNonLocked(true);
+		user1.setCredentialsNonExpired(true);
+		user1.setEnabled(true);
 
-		User user2 = new User("Yasmim", "yasmim@gmail.com", passwordEncoder.encode("yas123"));
+		User user2 = new User();
+		user2.setName("Yasmim Martello");
+		user2.setEmail("yasmim@gmail.com");
+		user2.setUsername("Yasmim");
+		user2.setPassword(passwordEncoder.encode("Yasmim123"));
+		user2.setRole(Role.USER);
+		user2.setAccountNonExpired(true);
+		user2.setAccountNonLocked(true);
+		user2.setCredentialsNonExpired(true);
+		user2.setEnabled(true);
 		
 		userRepository.save(user1);
 		userRepository.save(user2);
