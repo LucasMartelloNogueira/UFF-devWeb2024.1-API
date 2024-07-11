@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import id.uff.lucasmartello20241.devwebapi.model.entities.Adoption;
 import id.uff.lucasmartello20241.devwebapi.model.entities.Cart;
@@ -15,6 +16,7 @@ import id.uff.lucasmartello20241.devwebapi.model.entities.Sanctuary;
 import id.uff.lucasmartello20241.devwebapi.model.entities.SanctuaryPet;
 import id.uff.lucasmartello20241.devwebapi.model.entities.User;
 import id.uff.lucasmartello20241.devwebapi.model.enums.AdoptionStatus;
+import id.uff.lucasmartello20241.devwebapi.model.enums.Role;
 import id.uff.lucasmartello20241.devwebapi.repositories.AdoptionRepository;
 import id.uff.lucasmartello20241.devwebapi.repositories.CartItemRepository;
 import id.uff.lucasmartello20241.devwebapi.repositories.CartRepository;
@@ -51,11 +53,21 @@ public class DevWebApiApplication implements CommandLineRunner{
 	@Autowired
 	CartItemRepository cartItemRepository;
 
+	@Autowired
+	PasswordEncoder passwordEncoder;
+
 
 	@Override
 	public void run(String... args) {
-		User user1 = new User("Lucas", "lucas@gmail.com", "abc123");
-		User user2 = new User("Yasmim", "yasmim@gmail.com", "abc123");
+
+		User user1 = new User();
+		user1.setName("Lucas Martello");
+		user1.setEmail("lucas@gmail.com");
+		user1.setUsername("Lucas");
+		user1.setPassword(passwordEncoder.encode("lucas123"));
+		user1.setRole(Role.ADMIN);
+
+		User user2 = new User("Yasmim", "yasmim@gmail.com", passwordEncoder.encode("yas123"));
 		
 		userRepository.save(user1);
 		userRepository.save(user2);

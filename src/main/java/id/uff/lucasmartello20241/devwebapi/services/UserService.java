@@ -1,5 +1,7 @@
 package id.uff.lucasmartello20241.devwebapi.services;
 
+import java.util.Optional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -43,5 +45,9 @@ public class UserService {
 
     public Page<User> findAllPaginated(Pageable pageable) {
         return userRepository.findAllPaginated(pageable);
+    }
+
+    public Optional<User> findByUsername(String username) {
+        return userRepository.findByUsername(username);
     }
 }

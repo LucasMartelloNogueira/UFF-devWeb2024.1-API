@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
 import id.uff.lucasmartello20241.devwebapi.exceptions.NotFoundException;
+import id.uff.lucasmartello20241.devwebapi.exceptions.UnauthorizedException;
 
 @CrossOrigin("http://localhost:5173")
 public class BaseController {
@@ -16,6 +17,11 @@ public class BaseController {
     @ExceptionHandler(NotFoundException.class)
     public ResponseEntity<Map<String, Object>> handleNotFoundException(NotFoundException exception) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(exception.toMap());
+    }
+
+    @ExceptionHandler(UnauthorizedException.class)
+    public ResponseEntity<Map<String, Object>> handleUnauthorizedException(UnauthorizedException exception){
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(exception.toMap());
     }
 
     @ExceptionHandler(Exception.class)
@@ -29,5 +35,6 @@ public class BaseController {
 
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(responseBody);
     }
+
 
 }
