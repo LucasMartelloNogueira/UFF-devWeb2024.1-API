@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import id.uff.lucasmartello20241.devwebapi.model.dtos.SanctuaryPetWithPetInfoDTO;
+import id.uff.lucasmartello20241.devwebapi.model.dtos.SanctuaryPetsWithPetInfoListDTO;
 import id.uff.lucasmartello20241.devwebapi.model.entities.SanctuaryPet;
 import id.uff.lucasmartello20241.devwebapi.model.utils.PageResult;
 import id.uff.lucasmartello20241.devwebapi.services.SanctuaryPetService;
@@ -53,6 +54,11 @@ public class SanctuaryPetController extends BaseController{
     public ResponseEntity<Void> delete(@PathVariable("id") int id) {
         sanctuaryPetService.delete(id);
         return ResponseEntity.status(HttpStatus.OK).build();
+    }
+
+    @GetMapping("/GetAllBySanctuaryId/{sanctuaryId}")
+    public ResponseEntity<SanctuaryPetsWithPetInfoListDTO> getAllPetsBySanctuary(@PathVariable("sanctuaryId") int sanctuaryId) {
+        return ResponseEntity.status(HttpStatus.OK).body(sanctuaryPetService.getAllPetsBySanctuary(sanctuaryId));
     }
 
     @GetMapping()

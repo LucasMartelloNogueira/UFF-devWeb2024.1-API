@@ -14,13 +14,14 @@ import id.uff.lucasmartello20241.devwebapi.auth.dto.request.LoginRequest;
 import id.uff.lucasmartello20241.devwebapi.auth.dto.request.RegisterRequest;
 import id.uff.lucasmartello20241.devwebapi.auth.dto.response.LoginResponse;
 import id.uff.lucasmartello20241.devwebapi.config.TokenService;
+import id.uff.lucasmartello20241.devwebapi.controllers.BaseController;
 import id.uff.lucasmartello20241.devwebapi.model.entities.User;
 import id.uff.lucasmartello20241.devwebapi.repositories.UserRepository;
 
 
 @RestController
 @RequestMapping("/auth")
-public class AuthController {
+public class AuthController extends BaseController{
 
     @Autowired
     private AuthenticationManager authenticationManager;

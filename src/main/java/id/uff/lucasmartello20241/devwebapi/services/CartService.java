@@ -73,27 +73,34 @@ public class CartService {
 
         for (int sanctuaryPetId : updateCartDTO.sanctuaryPetsId()) {
 
-            CartItem ci = null;
+            boolean newItem = true;
 
             for (CartItem cartItem : cart.getItems()) {
 
                 // tentou adicionar um item no carrinho que já está adicionado
                 if (cartItem.getSanctuaryPetId() == sanctuaryPetId){
-                    ci = cartItem;
+                    newItem = false;
                     break;
                 }
             }
 
-            if (ci == null) {
-                ci = cartItemRepository.save(new CartItem(cart, sanctuaryPetId, 1)); 
+            if (newItem == true) {
+                CartItem ci = cartItemRepository.save(new CartItem(cart, sanctuaryPetId, 1));
+                int cartItemId = ci.getId();
+                SanctuaryPet sanctuaryPet = sanctuaryPetRepository.findById(ci.getSanctuaryPetId()).orElseThrow(() -> new NotFoundException(String.format("sanctuaryPet of id %d not found", cartItemId)));
+                Pet pet = petRepository.findById(sanctuaryPet.getPetId()).orElseThrow(() -> new NotFoundException(String.format("Pet of id %d not found", sanctuaryPet.getPetId())));
+                CartItemWithPetInfoDTO cartItemWithPetInfoDTO = CartItemWithPetInfoDTO.fromEntity(ci, cart, sanctuaryPet, pet);
+                items.add(cartItemWithPetInfoDTO); 
             }
-
-            int cartItemId = ci.getId();
-            SanctuaryPet sanctuaryPet = sanctuaryPetRepository.findById(ci.getSanctuaryPetId()).orElseThrow(() -> new NotFoundException(String.format("sanctuaryPet of id %d not found", cartItemId)));
+        }
+        
+        // adicionando os itens que já estao no carinho
+        for (CartItem cartItem : cart.getItems()) {
+            int cartItemId = cartItem.getId();
+            SanctuaryPet sanctuaryPet = sanctuaryPetRepository.findById(cartItem.getSanctuaryPetId()).orElseThrow(() -> new NotFoundException(String.format("sanctuaryPet of id %d not found", cartItemId)));
             Pet pet = petRepository.findById(sanctuaryPet.getPetId()).orElseThrow(() -> new NotFoundException(String.format("Pet of id %d not found", sanctuaryPet.getPetId())));
-            CartItemWithPetInfoDTO cartItemWithPetInfoDTO = CartItemWithPetInfoDTO.fromEntity(ci, cart, sanctuaryPet, pet);
+            CartItemWithPetInfoDTO cartItemWithPetInfoDTO = CartItemWithPetInfoDTO.fromEntity(cartItem, cart, sanctuaryPet, pet);
             items.add(cartItemWithPetInfoDTO);
-
         }
 
         CartWithPetsInfoDTO cartWithPetsInfoDTO = new CartWithPetsInfoDTO(cart.getId(), user, items);
@@ -115,7 +122,7 @@ public class CartService {
             for (int sanctuaryPetId : updateCartDTO.sanctuaryPetsId()) {
                 
                 if (ci.getSanctuaryPetId() == sanctuaryPetId) {
-                    cartItemRepository.deleteById(sanctuaryPetId);
+                    cartItemRepository.deleteById(ci.getId());
                 }else {
                     SanctuaryPet sanctuaryPet = sanctuaryPetRepository.findById(ci.getSanctuaryPetId()).orElseThrow(() -> new NotFoundException(String.format("sanctuaryPet of id %d not found", ci.getSanctuaryPetId())));
                     Pet pet = petRepository.findById(sanctuaryPet.getPetId()).orElseThrow(() -> new NotFoundException(String.format("Pet of id %d not found", sanctuaryPet.getPetId())));

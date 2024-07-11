@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import id.uff.lucasmartello20241.devwebapi.model.dtos.CartWithPetsInfoDTO;
 import id.uff.lucasmartello20241.devwebapi.model.dtos.UpdateCartDTO;
-import id.uff.lucasmartello20241.devwebapi.model.dtos.UpdateCartItemQuantityDTO;
 import id.uff.lucasmartello20241.devwebapi.model.dtos.UpdateCartItemsDTO;
 import id.uff.lucasmartello20241.devwebapi.services.CartService;
 

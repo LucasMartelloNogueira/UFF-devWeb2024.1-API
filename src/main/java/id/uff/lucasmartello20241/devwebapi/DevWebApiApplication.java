@@ -89,12 +89,24 @@ public class DevWebApiApplication implements CommandLineRunner{
 		Pet pet2 = new Pet("Hazel", "cachorro", 2 , 1.28, 47.39, 250.00);
 		Pet pet3 = new Pet("Salem", "gato", 1 , 0.34, 5.68, 120.50);
 		Pet pet4 = new Pet("Bruce", "cachorro", 7 , 1.24, 15.87, 400.00);
+		Pet pet5 = new Pet("Mac", "cachorro", 10 , 1.30, 50.87, 200.00);
+		Pet pet6 = new Pet("Wanda", "gato", 4 , 0.68, 8.98, 167.70);
+		Pet pet7 = new Pet("Leia", "gato", 3 , 0.68, 8.98, 167.70);
+		Pet pet8 = new Pet("Mel", "cachorro", 10 , 1.30, 50.87, 200.00);
+		Pet pet9 = new Pet("Maia", "gato", 4 , 0.68, 8.98, 167.70);
+		Pet pet10 = new Pet("Luna", "gato", 3 , 0.68, 8.98, 167.70);
 
 		petRepository.save(pet1);
 		petRepository.save(pet2);
 		petRepository.save(pet3);
 		petRepository.save(pet4);
-
+		petRepository.save(pet5);
+		petRepository.save(pet6);
+		petRepository.save(pet7);
+		petRepository.save(pet8);
+		petRepository.save(pet9);
+		petRepository.save(pet10);
+		
 		Sanctuary sanctuary1 = new Sanctuary("lar dos pets", "Brasil", "Rio de Janeiro", "Niteroi", "Rua das flores 100", user1);
 		Sanctuary sanctuary2 = new Sanctuary("casa dos pets", "Colombia", "São Paulo", "Niteroi", "Rua das árvores 50", user2);
 
@@ -105,11 +117,23 @@ public class DevWebApiApplication implements CommandLineRunner{
 		SanctuaryPet sanctuaryPet2 = new SanctuaryPet(pet2.getId(), sanctuary1.getId(), AdoptionStatus.ADOPTED, "amigavel");
 		SanctuaryPet sanctuaryPet3 = new SanctuaryPet(pet3.getId(), sanctuary2.getId(), AdoptionStatus.WAITING_ADOPTION, "amigavel");
 		SanctuaryPet sanctuaryPet4 = new SanctuaryPet(pet4.getId(), sanctuary2.getId(), AdoptionStatus.ADOPTED, "amigavel");
+		SanctuaryPet sanctuaryPet5 = new SanctuaryPet(pet5.getId(), sanctuary1.getId(), AdoptionStatus.WAITING_ADOPTION, "amigavel");
+		SanctuaryPet sanctuaryPet6 = new SanctuaryPet(pet6.getId(), sanctuary1.getId(), AdoptionStatus.WAITING_ADOPTION, "amigavel");
+		SanctuaryPet sanctuaryPet7 = new SanctuaryPet(pet7.getId(), sanctuary1.getId(), AdoptionStatus.WAITING_ADOPTION, "amigavel");
+		SanctuaryPet sanctuaryPet8 = new SanctuaryPet(pet8.getId(), sanctuary1.getId(), AdoptionStatus.WAITING_ADOPTION, "amigavel");
+		SanctuaryPet sanctuaryPet9 = new SanctuaryPet(pet9.getId(), sanctuary1.getId(), AdoptionStatus.WAITING_ADOPTION, "amigavel");
+		SanctuaryPet sanctuaryPet10 = new SanctuaryPet(pet10.getId(), sanctuary1.getId(), AdoptionStatus.WAITING_ADOPTION, "amigavel");
 
 		sanctuaryPet1 = sanctuaryPetRepository.save(sanctuaryPet1);
 		sanctuaryPet2 = sanctuaryPetRepository.save(sanctuaryPet2);
 		sanctuaryPet3 = sanctuaryPetRepository.save(sanctuaryPet3);
 		sanctuaryPet4 = sanctuaryPetRepository.save(sanctuaryPet4);
+		sanctuaryPet4 = sanctuaryPetRepository.save(sanctuaryPet5);
+		sanctuaryPet4 = sanctuaryPetRepository.save(sanctuaryPet6);
+		sanctuaryPet4 = sanctuaryPetRepository.save(sanctuaryPet7);
+		sanctuaryPet4 = sanctuaryPetRepository.save(sanctuaryPet8);
+		sanctuaryPet4 = sanctuaryPetRepository.save(sanctuaryPet9);
+		sanctuaryPet4 = sanctuaryPetRepository.save(sanctuaryPet10);
 
 		Adoption adoption1 = new Adoption(user1.getId(), sanctuaryPet2.getId(), LocalDateTime.now());
 		Adoption adoption2 = new Adoption(user2.getId(), sanctuaryPet4.getId(), LocalDateTime.now());

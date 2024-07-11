@@ -2,6 +2,7 @@ package id.uff.lucasmartello20241.devwebapi.services;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -10,6 +11,7 @@ import org.springframework.stereotype.Service;
 
 import id.uff.lucasmartello20241.devwebapi.exceptions.NotFoundException;
 import id.uff.lucasmartello20241.devwebapi.model.dtos.SanctuaryPetWithPetInfoDTO;
+import id.uff.lucasmartello20241.devwebapi.model.dtos.SanctuaryPetsWithPetInfoListDTO;
 import id.uff.lucasmartello20241.devwebapi.model.entities.Pet;
 import id.uff.lucasmartello20241.devwebapi.model.entities.SanctuaryPet;
 import id.uff.lucasmartello20241.devwebapi.model.utils.PageResult;
@@ -45,6 +47,22 @@ public class SanctuaryPetService {
     public void delete(int id) throws NotFoundException{
         sanctuaryPetRepository.findById(id).orElseThrow(() -> new NotFoundException(String.format("sanctuaryPet of id %d not found", id))); 
         sanctuaryPetRepository.deleteById(id);
+    }
+
+    public SanctuaryPetsWithPetInfoListDTO getAllPetsBySanctuary(int sanctuaryId) {
+        List<SanctuaryPet> sanctuaryPets = sanctuaryPetRepository.getAllPetsBySanctuary(sanctuaryId);
+
+        List<SanctuaryPetWithPetInfoDTO> sanctuaryPetWithPetInfoDTOs = new ArrayList<>();
+
+        for (SanctuaryPet sanctuaryPet : sanctuaryPets) {
+            Optional<Pet> pet = petRepository.findById(sanctuaryPet.getPetId());
+            if (pet.isPresent()) {
+                var sp = SanctuaryPetWithPetInfoDTO.fromEntity(sanctuaryPet, pet.get());
+                sanctuaryPetWithPetInfoDTOs.add(sp);
+            }
+        }
+
+        return new SanctuaryPetsWithPetInfoListDTO(sanctuaryPetWithPetInfoDTOs);
     }
 
     public Page<SanctuaryPet> findAllPaginated(Pageable pageable) {
